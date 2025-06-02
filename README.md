@@ -1,5 +1,3 @@
----
-
 # 📧 Email Classification API (with PII Masking + Unsupervised Learning)
 
 This project provides a FastAPI-based Email Classification API that:
