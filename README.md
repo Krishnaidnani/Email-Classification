@@ -1,35 +1,38 @@
+---
+
 # 📧 Email Classification API (with PII Masking + Unsupervised Learning)
 
-This project implements an Email Classification API that:
-- 🔐 Detects and masks sensitive Personally Identifiable Information (PII) using regular expressions and spaCy NLP.
-- 📊 Classifies emails into categories such as _Request_, _Incident_, _Change_, and _Problem_ using unsupervised machine learning (KMeans).
-- 🚀 Provides a FastAPI-powered REST endpoint for real-time predictions.
+This project provides a FastAPI-based Email Classification API that:
+
+* 🔐 Masks Personally Identifiable Information (PII) using regex and NLP.
+* 🧠 Classifies emails into categories like *Request*, *Incident*, *Change*, and *Problem* using unsupervised KMeans clustering.
+* 🚀 Offers a REST endpoint for real-time predictions.
 
 ---
 
 ## 🔧 Features
 
-- ✅ PII Masking: Regex + NLP-based detection of emails, phone numbers, names, card info, etc.
-- ✅ TF-IDF Vectorization for text processing.
-- ✅ KMeans Clustering for unsupervised categorization.
-- ✅ FastAPI server for deployment and testing.
-- ✅ Outputs include original email, masked entities, and predicted category.
+* ✅ **PII Masking** – Uses regex and spaCy to detect and mask emails, phone numbers, names, and card info.
+* ✅ **TF-IDF Vectorization** – Converts email text into numerical features.
+* ✅ **KMeans Clustering** – Groups similar emails without labeled data.
+* ✅ **FastAPI Server** – Easy to run and test with interactive Swagger UI.
+* ✅ **Detailed Output** – Returns original email, masked content, identified PII, and predicted category.
 
 ---
 
 ## 📁 Project Structure
 
-Bash
-
+```
 .
-├── main.py                  # FastAPI server
-├── masking.py              # PII masking logic
-├── classifier.py          # Model training script
-├── email_kmeans.joblib     # Saved clustering model (generated after training)
-├── tfidf_vectorizer.joblib # Saved TF-IDF vectorizer (generated after training)
-├── clustered_emails.csv    # Output file with cluster labels
-├── email_dataset.csv       # Input dataset (user provided)
-└── README.md               # This file
+├── main.py                  # FastAPI server (entry point)
+├── masking.py               # PII masking logic
+├── classifier.py            # Model training script
+├── email_kmeans.joblib      # Trained KMeans clustering model
+├── tfidf_vectorizer.joblib  # TF-IDF vectorizer
+├── clustered_emails.csv     # Output with predicted cluster labels
+├── email_dataset.csv        # Input dataset with raw emails
+└── README.md                # Project documentation
+```
 
 ---
 
@@ -37,70 +40,72 @@ Bash
 
 ### 1. 📦 Install Dependencies
 
-Bash
-
+```bash
 pip install -r requirements.txt
+```
 
-_requirements.txt should include:_
+*Your `requirements.txt` should include:*
 
-txt
-
+```txt
 fastapi
 uvicorn
 scikit-learn
 pandas
 spacy
 joblib
+```
 
-Then install the spaCy model:
+Then download the spaCy language model:
 
-Bash
-
+```bash
 python -m spacy download en_core_web_sm
+```
 
 ---
 
 ### 2. 🧠 Train the Model
 
-Ensure your email_dataset.csv has a column named email:
+Ensure your `email_dataset.csv` contains a column named `email`.
 
-Bash
-
-python train_model.py
+```bash
+python classifier.py
+```
 
 This will:
-- Mask PII
-- Train a KMeans model
-- Save the model + vectorizer
-- Export clustered_emails.csv with cluster labels
+
+* Mask PII from emails
+* Train a TF-IDF + KMeans model
+* Save the trained model and vectorizer
+* Generate `clustered_emails.csv` with predicted categories
 
 ---
 
-### 3. 🌐 Run the API
+### 3. 🌐 Run the API Server
 
-Bash
+```bash
+python main.py
+```
 
-python api.py
-
-Visit the interactive API docs at:  
-[http://localhost:7860/docs](http://localhost:7860/docs)
+API will be available at:
+➡️ [http://localhost:7860/docs](http://localhost:7860/docs) *(Swagger UI)*
 
 ---
 
 ## 📬 API Usage
 
-### POST /classify
+### POST `/classify`
 
-Request JSON:
-JSON
+**Request Example:**
 
+```json
 {
   "input_email_body": "Hi, I need help with my account. My name is John Doe and my email is john@example.com."
 }
+```
 
-Response JSON:
-JSON
+**Response Example:**
 
+```json
 {
   "input_email_body": "Hi, I need help with my account. My name is John Doe and my email is john@example.com.",
   "list_of_masked_entities": [
@@ -118,27 +123,28 @@ JSON
   "masked_email": "Hi, I need help with my account. My name is [full_name] and my email is [email].",
   "category_of_the_email": "Request"
 }
+```
 
 ---
 
-## 🧪 Example Clusters
+## 🧪 Example Cluster Mapping
 
-Customize the cluster names as per your KMeans results. Default categories:
+Customize categories based on your trained model. Default mapping:
 
-Python
-
+```python
 CLUSTER_NAMES = {
     0: "Request",
     1: "Incident",
     2: "Change",
     3: "Problem"
 }
+```
 
 ---
 
 ## 📌 Notes
 
-- Masked data improves generalization and reduces bias in clustering.
-- This system uses unsupervised clustering, so cluster names can be adjusted after analyzing email themes in clustered_emails.csv.
+* PII masking enhances privacy and model generalization.
+* Cluster labels can be renamed after reviewing contents in `clustered_emails.csv`.
 
 ---
